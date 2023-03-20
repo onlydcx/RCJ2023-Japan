@@ -48,7 +48,7 @@ while True:
     try:
         clock.tick()
         img = sensor.snapshot()
-        blue = getCam([(0, 100, -128, 127, -128, -27)])
+        blue = getCam([(0, 100, -6, 12, -35, -17)])
         #yellow = getCam([(0, 100, -3, 7, 26, 127)])
 
         bAngle = -1

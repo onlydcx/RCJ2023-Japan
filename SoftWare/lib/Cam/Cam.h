@@ -6,5 +6,5 @@ extern bool isNewData;
 class Cam {
    public:
       Cam();
-      int update();
+      void update();
 };

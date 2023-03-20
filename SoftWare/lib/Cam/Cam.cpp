@@ -4,13 +4,13 @@
 extern int goal;
 extern bool isNewData;
 
-int goal = 0;
+int goal = -1;
 bool isNewData;
 
 String cmds[3] = {"\0"};
 
 Cam::Cam() {
-   Serial8.begin(115200);
+   Serial8.begin(19200);
 }
 
 void split(String data, char delimiter, String *dst) {
@@ -25,9 +25,12 @@ void split(String data, char delimiter, String *dst) {
    }
 }
 
-int Cam::update(){
+void Cam::update(){
    if(Serial8.available()) {
       String byteRead = Serial8.readStringUntil('\0');
-      goal = byteRead.toInt();
+      int a = byteRead.toInt();
+      if(a > 0) {
+         goal = a;
+      }
    }
 }
