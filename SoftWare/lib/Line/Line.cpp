@@ -61,8 +61,8 @@ void Line::check() {
       digitalWrite(MuxPins[2],MuxCh[i][2]);
       digitalWrite(MuxPins[3],MuxCh[i][3]);
       int val = analogRead(A10);
-      // Serial.print(val);
-      // Serial.print(" ");
+      Serial.print(val);
+      Serial.print(" ");
       if(threshold[i] < val) {
          // Serial.print(i);
          // Serial.print(" ");
@@ -85,6 +85,6 @@ void Line::check() {
    else {
       // Serial.println("None");
    }
-   // delay(10);
-   // Serial.println("");
+   delay(10);
+   Serial.println("");
 }

@@ -5,6 +5,11 @@
 #include "Line.h"
 #include "Ball.h"
 #include "Cam.h"
+#include "Servo.h"
+
+#define dribbrer 37
+
+Servo esc;
 
 Motor motor;
 Line line;
@@ -13,6 +18,15 @@ Cam cam;
 // int goalAngle = 0;
 
 unsigned long lastKick = 0;
+
+void drribler_init() {
+   pinMode(dribbrer,OUTPUT);
+   esc.attach(dribbrer);
+   esc.writeMicroseconds(2000);
+   delay(2000);
+   esc.writeMicroseconds(1000);
+   delay(2000);
+}
 
 int gy180() {
    int __gy = GyroGet();
@@ -38,20 +52,15 @@ void setup() {
    GyroInit();
    pinMode(20,OUTPUT);
    BallInit();
-   // while(1) {
-   //    cam.update();
-
-   //    Serial.println(goal);
-   // }
+   drribler_init();
+   speed = 120;
 }
 
 void loop() {
-   // Serial.println(goal);
-
-   speed = 120;
+   IRUpDate();
+   bool isNear = (BallStr > 500) && ((BallAngle < 15) || (BallAngle > 345));
    bool iscatch = analogRead(A13) < 480;
    // line.check();
-   IRUpDate();
    cam.update();
 
    if(false) {
