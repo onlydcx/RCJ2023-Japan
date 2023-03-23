@@ -23,7 +23,7 @@ def getCam(threshold):
     pixels = [0]
     rectSpace = [0]
     cnt = 0
-    dx = dy = a = angle = cnt = 0
+    dx = dy = a = angle = cnt = dictance = 0
 
     for blob in img.find_blobs(threshold, pixels_threshold = 10, area_threshold = 100, merge = True, margin = 10):
         pixels.append(blob.pixels())
@@ -42,14 +42,15 @@ def getCam(threshold):
         if angle < 0:
             angle += 360
 
-    return angle, dx, dy, a, cnt
+    return angle, dx, dy, a, cnt, distance
 
 while True:
     try:
         clock.tick()
         img = sensor.snapshot()
-        blue = getCam([(0, 100, -6, 12, -35, -17)])
+        blue = getCam([(0, 100, -3, 8, 21, 127)])
         #yellow = getCam([(0, 100, -3, 7, 26, 127)])
+        dis = blue[5]
 
         bAngle = -1
 
@@ -58,7 +59,7 @@ while True:
         #if yellow[4] >= 0:
             #yAngle = yellow[0]
 
-        print(bAngle)
+        #print(dis)
 
         #if usb.isconnected():
             #img.draw_cross(160,120,(0,0,0))
@@ -77,7 +78,7 @@ while True:
 
 
 
-    except (ZeroDivisionError, RuntimeError, OSError) as err:
-        if usb.isconnected():
-            print(err)
+    except (ZeroDivisionError, RuntimeError, OSError, NameError) as err:
+        #if usb.isconnected():
+            #print(err)
         pass

@@ -28,6 +28,11 @@ void drribler_init() {
    delay(2000);
 }
 
+void dribble(int mode) {
+   int pulse[3] = {1000, 1400, 2000};
+   esc.writeMicroseconds(pulse[mode]);
+}
+
 int gy180() {
    int __gy = GyroGet();
    if(__gy > 180) __gy -= 360;
@@ -84,29 +89,31 @@ void loop() {
          }
 
          int toMove = 180;
+         if(isNear) dribble(1);
 
          if(iscatch && ((goal < 90) || (goal > 270))) {
-            // cam.update();
+            dribble(2);
+            int rollPower = 100;
             if(goal > 180) goal -= 360;
             if(goal < 0) {
-               int gAngle = goal;
-               while(abs(gAngle - gy180()) > 20) {
-                  // char a[64];
-                  // sprintf(a,"%d %d", gAngle, gy180());
-                  Serial.println(abs(gAngle - gy180()));
-                  // Serial.println("回転");
-                  motor.roll(0,-100);
-                  motor.roll(3,-100);
-                  motor.roll(1,100);
-                  motor.roll(2,100);
-                  // if(abs(gAngle - gy180()) < 10) {
-                  //    // Serial.println("キック");
-                  //    kick();
-                  //    break;
-                  // }
+               while(abs(goal - gy180()) > 20) {
+                  motor.roll(0,-rollPower);
+                  motor.roll(1,rollPower);
+                  motor.roll(2,rollPower);
+                  motor.roll(3,-rollPower);
                }
                kick();
             }
+            else {
+               while(abs(goal - gy180()) > 20) {
+                  motor.roll(0,rollPower);
+                  motor.roll(1,-rollPower);
+                  motor.roll(2,-rollPower);
+                  motor.roll(3,rollPower);
+               }
+               kick();
+            }
+            dribble(0);
          }
 
          if (BallStr < 300) {
