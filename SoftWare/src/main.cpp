@@ -16,6 +16,10 @@ Cam cam;
 
 unsigned long lastKick = 0;
 
+bool iscatch() {
+   return (analogRead(A13) < 110);
+}
+
 bool isBlue = 0;
 
 void drribler_init() {
@@ -57,14 +61,13 @@ void setup() {
    pinMode(20,OUTPUT);
    BallInit();
    drribler_init();
-   speed = 150;
-   kick();
+   speed = 140;
+   // kick();
 }
 
 void loop() {
    IRUpDate();
    bool isNear = (BallStr > 500) && ((BallAngle < 15) || (BallAngle > 345));
-   bool iscatch = analogRead(A13) < 80;
    line.check();
    cam.update();
 
@@ -92,7 +95,7 @@ void loop() {
          if(isNear) dribble(1);
          else dribble(0);
 
-         if(iscatch) {
+         if(iscatch()) {
             if((goal < 20) || (goal > 350)) {
                dribble(1);
                delay(100);
@@ -128,7 +131,7 @@ void loop() {
                if(((goal >= 45) && (goal < 90)) || ((goal <= 300) && (goal > 270))) {
                   dribble(2);
                   int time = millis();
-                  while(((millis() - time) < 1500) && iscatch) {
+                  while(((millis() - time) < 1500) && iscatch()) {
                      cam.update();
                      motor.run(180);
                      if((goal < 45) || (goal > 315)) {
