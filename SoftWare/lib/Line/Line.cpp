@@ -6,7 +6,7 @@ extern int threshold[16];
 const int MuxPins[4] = {10,11,12,30};
 extern int avoidAngle;
 
-int threshold[16] = {0};
+int threshold[16] = {142,146,109,89,72,100,83,76,114,124,120,72,55,72,62,92};
 
 bool isOnLine;
 
@@ -27,7 +27,7 @@ Line::Line() {
       pinMode(MuxPins[i],OUTPUT);
    }
    for(int i = 0; i < 16; i++) {
-      threshold[i] = 200;
+      // threshold[i] = 150;
       LineAngle[i] = (float)22.5 * i;
    }
 }
@@ -48,7 +48,7 @@ void Line::ThUpdate() {
       }
    }
    for(int i = 0; i < 16; i++) {
-      threshold[i] = min[i] + (max[i] - min[i]) / 2;
+      threshold[i] = min[i] + (max[i] - min[i]) / 3;
       Serial.print(threshold[i]);
       Serial.print(",");
    }
@@ -65,11 +65,11 @@ void Line::check() {
       digitalWrite(MuxPins[2],MuxCh[i][2]);
       digitalWrite(MuxPins[3],MuxCh[i][3]);
       int val = analogRead(A10);
-      Serial.print(val);
-      Serial.print(" ");
+      // Serial.print(val);
+      // Serial.print(" ");
       if(threshold[i] <= val) {
-         // Serial.print(i);
-         // Serial.print(" ");
+         Serial.print(i);
+         Serial.print(" ");
          int angle = 22.5 * i * (PI / 180);
          hcnt++;
          Vx += cos(angle);

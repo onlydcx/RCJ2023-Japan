@@ -16,6 +16,8 @@ Cam cam;
 
 unsigned long lastKick = 0;
 
+bool isBlue = 0;
+
 void drribler_init() {
    pinMode(dribbrer,OUTPUT);
    esc.attach(dribbrer);
@@ -55,18 +57,8 @@ void setup() {
    pinMode(20,OUTPUT);
    BallInit();
    drribler_init();
-   speed = 180;
-//    while(1) {
-// Serial.println(analogRead(A13) < 80);
-//    }
-   // // // dribble(2);
-   // // delay(5000);
-   // // kick();
-   // // dribble(0);
-   // while(1) {
-   //    int rollPower = 100;
-
-   // }
+   speed = 150;
+   kick();
 }
 
 void loop() {
@@ -78,7 +70,7 @@ void loop() {
 
    if(isOnLine) {
       motor.run(avoidAngle);
-      delay(10);
+      delay(30);
    }
    else {
       if(isNoBall) {
@@ -101,38 +93,49 @@ void loop() {
          else dribble(0);
 
          if(iscatch) {
-            dribble(2);
-            if((goal < 45) || (goal > 315)) {
-               int rollPower = 80;
+            if((goal < 20) || (goal > 350)) {
+               dribble(1);
+               delay(100);
+               kick();
+            }
+            else if((goal < 45) || (goal > 300)) {
+               dribble(2);
+               int rollPower = 60;
+               int time = millis();
                if(goal > 180) goal -= 360;
                if(goal < 0) {
-                  while(abs(goal - gy180()) > 10) {
+                  while((abs(goal - gy180()) > 10) && ((millis() - time) < 700)) {
                      motor.roll(0,-rollPower);
                      motor.roll(1,-rollPower);
                      motor.roll(2,-rollPower);
                      motor.roll(3,-rollPower);
                   }
-                  kick();
                }
                else {
-                  while(abs(goal - gy180()) > 10) {
+                  while((abs(goal - gy180()) > 10) && ((millis() - time) < 700)) {
                      motor.roll(0,rollPower);
                      motor.roll(1,rollPower);
                      motor.roll(2,rollPower);
                      motor.roll(3,rollPower);
                   }
-                  kick();
                }
+               dribble(1);
+               delay(100);
+               kick();
                dribble(0);
             }
             else {
-               if(((goal >= 45) && (goal < 90)) || ((goal =< 315) && (goal > 270))) {
+               if(((goal >= 45) && (goal < 90)) || ((goal <= 300) && (goal > 270))) {
+                  dribble(2);
                   int time = millis();
-                  motor.run(0);
-
+                  while(((millis() - time) < 1500) && iscatch) {
+                     cam.update();
+                     motor.run(180);
+                     if((goal < 45) || (goal > 315)) {
+                        break;
+                     }
+                  }
                }
-               int time = millis();
-               motor.run(0);
             }
          }
 
@@ -145,10 +148,10 @@ void loop() {
             }
             else {
                if (BallAngle <= 180) {
-                  toMove = BallAngle + dirPlus * 1.2;
+                  toMove = BallAngle + dirPlus * 1.1;
                }
                else {
-                  toMove = BallAngle - dirPlus * 1.2;
+                  toMove = BallAngle - dirPlus * 1.1;
                }
             }
          }
