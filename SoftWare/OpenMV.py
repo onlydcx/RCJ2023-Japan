@@ -4,10 +4,10 @@ from ulab import numpy as np
 sensor.reset()
 sensor.set_pixformat(sensor.RGB565)
 sensor.set_framesize(sensor.QVGA)
-sensor.set_contrast(3)
+sensor.set_contrast(100)
 sensor.set_brightness(1)
 sensor.skip_frames(30)
-sensor.set_auto_gain(True)
+sensor.set_auto_gain(False)
 sensor.set_auto_whitebal(False)
 sensor.set_vflip(False)
 sensor.set_hmirror(True)
@@ -48,7 +48,7 @@ while True:
     try:
         clock.tick()
         img = sensor.snapshot()
-        blue = getCam([(0, 100, -3, 8, 21, 127)])
+        blue = getCam([(44, 100, -128, 127, -128, -13)])
         #yellow = getCam([(0, 100, -3, 7, 26, 127)])
         dis = blue[5]
 
@@ -59,7 +59,7 @@ while True:
         #if yellow[4] >= 0:
             #yAngle = yellow[0]
 
-        #print(dis)
+        print(bAngle)
 
         #if usb.isconnected():
             #img.draw_cross(160,120,(0,0,0))

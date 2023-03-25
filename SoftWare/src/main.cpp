@@ -10,12 +10,9 @@
 #define dribbrer 37
 
 Servo esc;
-
 Motor motor;
 Line line;
 Cam cam;
-
-// int goalAngle = 0;
 
 unsigned long lastKick = 0;
 
@@ -42,7 +39,7 @@ int gy180() {
 bool kick() {
    if((millis() - lastKick) > 150) {
       digitalWrite(20,HIGH);
-      delay(200);
+      delay(150);
       digitalWrite(20,LOW);
       lastKick = millis();
       return true;
@@ -58,19 +55,30 @@ void setup() {
    pinMode(20,OUTPUT);
    BallInit();
    drribler_init();
-   speed = 120;
+   speed = 180;
+//    while(1) {
+// Serial.println(analogRead(A13) < 80);
+//    }
+   // // // dribble(2);
+   // // delay(5000);
+   // // kick();
+   // // dribble(0);
+   // while(1) {
+   //    int rollPower = 100;
+
+   // }
 }
 
 void loop() {
    IRUpDate();
    bool isNear = (BallStr > 500) && ((BallAngle < 15) || (BallAngle > 345));
-   bool iscatch = analogRead(A13) < 480;
-   // line.check();
+   bool iscatch = analogRead(A13) < 80;
+   line.check();
    cam.update();
 
-   if(false) {
+   if(isOnLine) {
       motor.run(avoidAngle);
-      // delay(10);
+      delay(10);
    }
    else {
       if(isNoBall) {
@@ -90,30 +98,42 @@ void loop() {
 
          int toMove = 180;
          if(isNear) dribble(1);
+         else dribble(0);
 
-         if(iscatch && ((goal < 90) || (goal > 270))) {
+         if(iscatch) {
             dribble(2);
-            int rollPower = 100;
-            if(goal > 180) goal -= 360;
-            if(goal < 0) {
-               while(abs(goal - gy180()) > 20) {
-                  motor.roll(0,-rollPower);
-                  motor.roll(1,rollPower);
-                  motor.roll(2,rollPower);
-                  motor.roll(3,-rollPower);
+            if((goal < 45) || (goal > 315)) {
+               int rollPower = 80;
+               if(goal > 180) goal -= 360;
+               if(goal < 0) {
+                  while(abs(goal - gy180()) > 10) {
+                     motor.roll(0,-rollPower);
+                     motor.roll(1,-rollPower);
+                     motor.roll(2,-rollPower);
+                     motor.roll(3,-rollPower);
+                  }
+                  kick();
                }
-               kick();
+               else {
+                  while(abs(goal - gy180()) > 10) {
+                     motor.roll(0,rollPower);
+                     motor.roll(1,rollPower);
+                     motor.roll(2,rollPower);
+                     motor.roll(3,rollPower);
+                  }
+                  kick();
+               }
+               dribble(0);
             }
             else {
-               while(abs(goal - gy180()) > 20) {
-                  motor.roll(0,rollPower);
-                  motor.roll(1,-rollPower);
-                  motor.roll(2,-rollPower);
-                  motor.roll(3,rollPower);
+               if(((goal >= 45) && (goal < 90)) || ((goal =< 315) && (goal > 270))) {
+                  int time = millis();
+                  motor.run(0);
+
                }
-               kick();
+               int time = millis();
+               motor.run(0);
             }
-            dribble(0);
          }
 
          if (BallStr < 300) {

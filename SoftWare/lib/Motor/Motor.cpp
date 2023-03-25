@@ -65,14 +65,16 @@ void Motor::run(int angle) {
 
    int gy = GyroGet(), addPower = 0;
 
-   // while(GyroGet() > 45 || GyroGet() < 315) {
-   //    int power = -100;
-   //    if(GyroGet() > 180) power *= -1;
-   //    for(int i = 0; i < 4; i++) {
-   //       Motor::roll(i,power);
-   //    }
-   //    if(GyroGet() < 45 || GyroGet() > 315) break;
-   // }
+   if(GyroGet() > 45 || GyroGet() < 315) {
+      while(1) {
+         int power = -100;
+         if(GyroGet() > 180) power *= -1;
+         for(int i = 0; i < 4; i++) {
+            Motor::roll(i,power);
+         }
+        if(GyroGet() < 45 || GyroGet() > 315) break;
+      }
+   }
 
    // 30 good
    if((gy >= 10) && (gy < 180)) addPower = -20;

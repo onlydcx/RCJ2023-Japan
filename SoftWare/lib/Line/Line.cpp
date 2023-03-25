@@ -1,12 +1,14 @@
 #include "Line.h"
 #include "Arduino.h"
 
-extern bool isOnLine = false;
+extern bool isOnLine;
 extern int threshold[16];
 const int MuxPins[4] = {10,11,12,30};
 extern int avoidAngle;
 
-int threshold[16] = {50,40,40,50,40,35,30,35,35,50,40,25,15,15,20,25};
+int threshold[16] = {0};
+
+bool isOnLine;
 
 float LineAngle[16] = {0.0};
 int readVal[16] = {0};
@@ -25,11 +27,13 @@ Line::Line() {
       pinMode(MuxPins[i],OUTPUT);
    }
    for(int i = 0; i < 16; i++) {
+      threshold[i] = 200;
       LineAngle[i] = (float)22.5 * i;
    }
 }
 
 void Line::ThUpdate() {
+   Serial.println("Start");
    int time = millis();
    int max[16] = {0}, min[16] = {1023};
    while((millis() - time) < 7000) {
@@ -63,7 +67,7 @@ void Line::check() {
       int val = analogRead(A10);
       Serial.print(val);
       Serial.print(" ");
-      if(threshold[i] < val) {
+      if(threshold[i] <= val) {
          // Serial.print(i);
          // Serial.print(" ");
          int angle = 22.5 * i * (PI / 180);
@@ -78,13 +82,11 @@ void Line::check() {
    // Serial.println(tmp);
    if(hcnt > 0) isOnLine = true;
    if(Vx != 0 && Vy != 0) {
-      // Serial.println(atan2(Vy,Vx));
       avoidAngle = atan2(Vy,Vx) * (180 / PI) + 90;
-      // Serial.println(atan2(Vy,Vx) * (180 / PI));
    }
    else {
       // Serial.println("None");
    }
-   delay(10);
+   // delay(10);
    Serial.println("");
 }
