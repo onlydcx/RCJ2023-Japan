@@ -15,6 +15,7 @@ Line line;
 Cam cam;
 
 unsigned long lastKick = 0;
+bool isNear = (BallStr > 450) && ((BallAngle < 15) || (BallAngle > 345));
 
 bool iscatch() {
    return (analogRead(A13) < 150);
@@ -69,14 +70,13 @@ void setup() {
    pinMode(20,OUTPUT);
    BallInit();
    drribler_init();
-   speed = 150;
+   speed = 140;
    // line.ThUpdate();
    // while(1) {}
 }
 
 void loop() {
    IRUpDate();
-   bool isNear = (BallStr > 450) && ((BallAngle < 15) || (BallAngle > 345));
    line.check();
    cam.update();
 
@@ -111,7 +111,7 @@ void loop() {
 
                if(rey() > 105) {
                   dribble(2);
-                  speed = 170;
+                  speed = 220;
                   motor.run(goal);
                }
                else {

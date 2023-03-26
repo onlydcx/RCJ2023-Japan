@@ -6,7 +6,7 @@ extern int threshold[16];
 const int MuxPins[4] = {10,11,12,30};
 extern int avoidAngle;
 
-int threshold[16] = {109,94,82,78,72,87,75,66,101,105,103,64,48,64,53,76};
+int threshold[16] = {120,106,90,84,81,98,78,75,107,114,106,66,49,65,58,82};
 
 bool isOnLine;
 
