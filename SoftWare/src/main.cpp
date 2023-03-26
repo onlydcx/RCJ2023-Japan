@@ -17,7 +17,15 @@ Cam cam;
 unsigned long lastKick = 0;
 
 bool iscatch() {
-   return (analogRead(A13) < 110);
+   return (analogRead(A13) < 150);
+}
+
+int rey() {
+   float distance = float(dis), angle = float(goal);
+   angle = 90 - angle;
+   angle *= (PI / 180);
+   int y = distance * sin(angle);
+   return y;
 }
 
 bool isBlue = 0;
@@ -61,19 +69,20 @@ void setup() {
    pinMode(20,OUTPUT);
    BallInit();
    drribler_init();
-   speed = 140;
-   // kick();
+   speed = 150;
+   // line.ThUpdate();
+   // while(1) {}
 }
 
 void loop() {
    IRUpDate();
-   bool isNear = (BallStr > 500) && ((BallAngle < 15) || (BallAngle > 345));
+   bool isNear = (BallStr > 450) && ((BallAngle < 15) || (BallAngle > 345));
    line.check();
    cam.update();
 
    if(isOnLine) {
       motor.run(avoidAngle);
-      delay(30);
+      delay(20);
    }
    else {
       if(isNoBall) {
@@ -95,52 +104,53 @@ void loop() {
          if(isNear) dribble(1);
          else dribble(0);
 
-         if(iscatch()) {
-            if((goal < 20) || (goal > 350)) {
-               dribble(1);
-               delay(100);
-               kick();
-            }
-            else if((goal < 45) || (goal > 300)) {
-               dribble(2);
-               int rollPower = 60;
-               int time = millis();
-               if(goal > 180) goal -= 360;
-               if(goal < 0) {
-                  while((abs(goal - gy180()) > 10) && ((millis() - time) < 700)) {
-                     motor.roll(0,-rollPower);
-                     motor.roll(1,-rollPower);
-                     motor.roll(2,-rollPower);
-                     motor.roll(3,-rollPower);
-                  }
+         if(!isNoGoal) {
+            while(iscatch() && !isOnLine) {
+               line.check();
+               cam.update();
+
+               if(rey() > 105) {
+                  dribble(2);
+                  speed = 170;
+                  motor.run(goal);
                }
                else {
-                  while((abs(goal - gy180()) > 10) && ((millis() - time) < 700)) {
-                     motor.roll(0,rollPower);
-                     motor.roll(1,rollPower);
-                     motor.roll(2,rollPower);
-                     motor.roll(3,rollPower);
+                  speed = 150;
+                  if((goal < 35) || (goal > 325)) { // 目の前
+                     dribble(1);
+                     kick();
+                  }
+                  else if((goal < 50) || (goal > 310)) { // 狙える位置
+                     dribble(2);
+                     cam.update(); 
+                     motor.run(goal);
+                     // if(goal <= 180){
+                     //    motor.run(goal + 30);
+                     // }else{
+                     //    motor.run(goal - 30);
+                     // }
+                  }
+                  else {
+                     // if(((goal >= 45) && (goal < 90)) || ((goal <= 300) && (goal > 270))) { // 狙うには急すぎ
+                        dribble(2);
+                        int time = millis();
+                        while(((millis() - time) < 1500)) {
+                           cam.update();
+                           motor.run(180);
+                           if(((goal < 45) || (goal > 300)) || !iscatch()) {
+                              motor.stop();
+                              // delay(100);
+                              break;
+                           }
+                        }
+                     // }
                   }
                }
-               dribble(1);
-               delay(100);
-               kick();
-               dribble(0);
-            }
-            else {
-               if(((goal >= 45) && (goal < 90)) || ((goal <= 300) && (goal > 270))) {
-                  dribble(2);
-                  int time = millis();
-                  while(((millis() - time) < 1500) && iscatch()) {
-                     cam.update();
-                     motor.run(180);
-                     if((goal < 45) || (goal > 315)) {
-                        break;
-                     }
-                  }
-               }
+
             }
          }
+
+
 
          if (BallStr < 300) {
             toMove = BallAngle;

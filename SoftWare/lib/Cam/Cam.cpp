@@ -3,9 +3,13 @@
 
 extern int goal;
 extern bool isNewData;
+extern int dis;
+extern bool isNoGoal;
 
 int goal = -1;
+int dis = -1;
 bool isNewData;
+bool isNoGoal;
 
 String cmds[3] = {"\0"};
 
@@ -28,9 +32,23 @@ void split(String data, char delimiter, String *dst) {
 void Cam::update(){
    if(Serial8.available()) {
       String byteRead = Serial8.readStringUntil('\0');
-      int a = byteRead.toInt();
+      // int a = byteRead.toInt();
+
+      String cmds[3] = {"\0"}; // 分割された文字列を格納する配列 
+      int a = 0, b = 0;
+      split(byteRead,' ',cmds);
+      a = cmds[0].toInt();
+      b = cmds[1].toInt();
+
       if(a > 0) {
          goal = a;
+         isNoGoal = false;
+      }
+      else if (a < 0) {
+         isNoGoal = true;
+      }
+      if(b > 0) {
+         dis = b;
       }
    }
 }
