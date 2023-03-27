@@ -1,4 +1,4 @@
-import sensor, time, image, pyb, ustruct, ulab
+import sensor, time, image, pyb, ulab
 from ulab import numpy as np
 
 sensor.reset()
@@ -48,39 +48,25 @@ while True:
     try:
         clock.tick()
         img = sensor.snapshot()
-        #blue = getCam([(0, 100, -3, 15, -35, -13)])
-        blue = getCam([(0, 100, -128, 127, 17, 127)])
-        dis = blue[5]
+        #data = getCam([(0, 100, -3, 15, -35, -13)])
+        data = getCam([(0, 100, -128, 127, 17, 127)])
+        dis = data[5]
 
-        bAngle = -1
+        goal = -1
 
-        if blue[4] >= 0:
-            bAngle = blue[0]
-        #if yellow[4] >= 0:
-            #yAngle = yellow[0]
+        if data[4] >= 0:
+            goal = data[0]
 
-        #y = sin(bAngle)
-
-        #print(bAngle,dis)
+        #print(goal,dis)
 
         if usb.isconnected():
             img.draw_cross(160,120,(0,0,0))
             img.draw_circle(160,120,120,(255,255,255))
-            #img.draw_cross(blue[1],blue[2],(0,0,0))
-            #img.draw_cross(yellow[1],yellow[2],(0,0,0))
             img.draw_line(160,120,blue[1],blue[2],(0,0,0))
-            #img.draw_line(160,120,yellow[1],yellow[2],(255,255,0))
-            #img.draw_string(10,10,"Angle:%d" % angle,(0,0,0),scale = 2, mono_space = False)
-            #img.draw_string(10,30,"Tit:%f Dis:%d" % (a, distance),(0,0,0),scale = 2, mono_space = False)
 
-        #uart.write(str(bAngle)+" "+str(yAngle)+'\0')
-        #time.sleep(1)
-        #uart.write(ustruct.pack('B',bAngle))
-        uart.write(str(bAngle)+' '+ str(dis)+'\0')
-
-
+        uart.write(str(goal)+' '+str(dis)+'\0')
 
     except (ZeroDivisionError, RuntimeError, OSError, NameError) as err:
-        #if usb.isconnected():
-            #print(err)
+        if usb.isconnected():
+            print(err)
         pass
